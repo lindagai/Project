@@ -5,6 +5,10 @@ date: "September 16, 2016"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
 ## Which project you are working on?
 
 I am working on a project on mental health (specifically suicidal ideation) and trolling among Reddit users, along with Lacey. Generally, we are interested in whether we can identify users that are depressed, and their identifying characteristics, as well as the relationship between trolling and mental health among Reddit users.
