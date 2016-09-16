@@ -76,9 +76,9 @@ Next week, I plan to:
 
 * finish a parser that will read in multiple JSON files and put the relevant information in a data frame
 * start classifying the text data by coming up with a list of regular expressions and using them to identify posts related to:
-+ suicidal ideation comments (e.g., grep phrases like “want to die”, “want to end it”, etc.)
-+ troll comments (e.g., grep memetic phrases that encourage other users to commit suicide, e.g. “kill yourself”, “do it f*****”, etc, as well as slurs)
+    + suicidal ideation comments (e.g., grep phrases like “want to die”, “want to end it”, etc.)
+    + troll comments (e.g., grep memetic phrases that encourage other users to commit suicide, e.g. “kill yourself”, “do it f*****”, etc, as well as slurs)
 * finalize my question, depending on what data is available
-*determine which subreddits to scrape
+* determine which subreddits to scrape
 
 Although I am interested in the relationship between trolling and mental health, I’m concerned about being able to identify instances of trolling because of Reddit’s moderators (particularly in depression subreddits, as the moderation there is so strict). The feasibility of such research questions will hopefully be resolved after exploring the data more.
