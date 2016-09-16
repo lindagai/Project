@@ -1,0 +1,107 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720
+
+\f0\fs24 \cf0 \expnd0\expndtw0\kerning0
+10:30-11:30 Genome Cafe\
+\
+This week please bring to lab a link to an Rmd document on your Github account where you have started writing what you are going to do on your project. You should include \
+\
+
+\b (a) Which project you are working on?
+\b0 \
+I am working on a project\expnd0\expndtw0\kerning0
+ on mental health (specifically suicidal ideation) and trolling among Reddit users\expnd0\expndtw0\kerning0
+, along with Lacey. Generally, we are interested in whether we can identify users that are depressed, and their identifying characteristics, as well as the relationship between trolling and mental health among Reddit users.\
+\
+Reddit is a popular online message board, commonly used to share news and images, as well as discussion on user-created topics. It is the 11th most popular website in the US, ranked just under Twitter which comes in at #10 (CITATION). Notably, some discussion boards (known as \'93subreddits\'94) are used to provide and ask for advice and support, and many users share deeply personal information and emotional states. We are particularly interested in how we might be able to identify suicidal ideation among Reddit users, as many users post suicide notes, reveal intention to commit suicide.\
+\
+\pard\pardeftab720
+
+\b \cf0 \expnd0\expndtw0\kerning0
+Some possible questions we might pursue are:
+\b0 \
+1. Suppose we treat suicidal ideation as a missing data problem, in which some users admit intention to commit suicide in their posts, and others are suicidal but do not post suicide notes or otherwise publicly admit suicidal intentions. Can we predict which users are suicidal based on their posts or activity? I would imagine basing this question somewhat on the Instagram depression paper ().\expnd0\expndtw0\kerning0
+\
+\
+2. What are the \expnd0\expndtw0\kerning0
+posting patterns of \expnd0\expndtw0\kerning0
+users that reveal suicidal ideation in their posts? Do they usually make one post and leave the site, or were they previously active? How many users, after posting about suicidal ideation, \'93disappear\'94 from a formerly active account, or conversely, continue to post?\
+\
+Secondly, like many other popular message boards like 4chan, Reddit has an active troll culture. Although some trolling is relatively benign, online harassment is almost omnipresent wherever internet surfers are permitted to write comments. Finding efficient ways to identify trolls then, would be beneficial for anyone who runs a site that allows for user input, on social media, content-based websites, as well as discussion boards like Reddit.\
+\
+To control trolling on its discussion boards, Reddit is moderated almost entirely by volunteers, and the reporting of trolls is crowdsourced. Comments that other users that are down voted sufficiently many times are hidden, and users are give the option to report inappropriate comments to moderators. Last year, the newly minted (and first female) Reddit CEO Ellen Pao attempted to control trolling on Reddit by banning some of the most popular troll subreddits, including one devoted to vitriol directed at overweight people, and another devoted to making fun of racial minorities. However, due to user backlash, she resigned a short time later, showing that many Reddit users holds troll culture dearly.\
+-https://www.theguardian.com/technology/2015/jul/10/ellen-pao-reddit-interim-ceo-resigns\
+\
+Some possible research questions are:\
+\
+1. Can we identify potential/current Reddit trolls using a combination of their post history, username, subreddits they are active in, etc.? \
+\
+2. Was Ellen Pao\'92s attempt to reduce trolling successful? I.e., did the incidence of trolling across Reddit/in the most popular subreddits change after notorious troll subreddits were banned from the site?\
+\
+3. Can we identify threads or contexts most likely to produce trolls?\
+\
+However, I\'92m still not sure how feasible answering any of these questions might be, as we have not cleaned up the data.\
+\
+\pard\pardeftab720
+
+\b \cf0 (b) what you have started to do on the project (think about data sets, think about how you are going to fit models, basically whatever you have thought of) and 
+\b0 \
+\
+
+\b Sourcing data:
+\b0 \
+Using a Python package found on github, subredditscraper.py (), I scraped 1 week from a single subreddit (r/sanctionedsuicide), a smaller subreddit which seems to have a relatively high density of suicide notes. The package gets all posts in a subreddit between two user-indicated time periods, and returns them as a set of JSON files, where each thread gets its own JSON file, containing the original post as well as the child posts.\
+\
+I also started writing up a JSON parser in R that collects the relevant information from a single JSON file and puts them in a data frame. \
+(The code right now is quite ugly, but I plan to clean it up over the weekend.)\
+\
+\pard\pardeftab720
+\cf0 \expnd0\expndtw0\kerning0
+Furthermore, there are several other Reddit datasets available that have already been scraped. Notably, 1.7 billion Reddit comments are said to be collected in a torrent several hundred GB, as well as one month of comments in a 32 GB (). These datasets have also been uploaded to online repositories like Google\'92s BigQuery. I am not sure if these will come in handy since they are quite large, but they may be worth examining after analyzing smaller datasets.\expnd0\expndtw0\kerning0
+\
+\
+\pard\pardeftab720
+
+\b \cf0 Developing a question:
+\b0 \
+\pard\pardeftab720
+
+\i \cf0 \expnd0\expndtw0\kerning0
+Reddit social structure:
+\i0 \
+To identify which subreddits might be of interest to analyze, I was also curious about which subreddits tended to share the same users. Using the BigQuery dataset of all comments posted in May 2015 and code provided by Reddit user, I found the subreddits that share the most users with r/depression:\
+\
+Reddit BigQuery map\
+\
+One interesting feature of these trees is that r/depression shares many of its users with r/funny. \
+\
+(Code to reproduce this image is given in the appendix.)\
+\
+I also started in r/depression, Reddit\'92s largest depression subreddit, and followed the sidebar links to identify subreddits that its users may also frequent. Sidebar links are depicted in the image below:\expnd0\expndtw0\kerning0
+\
+\
+\pard\pardeftab720
+
+\b \cf0 (c) what you plan to do over the next week. 
+\b0 \
+\
+Next week, I plan to:\
+\
+-\expnd0\expndtw0\kerning0
+finish a parser that will read in multiple JSON files and put the relevant information in a data frame\expnd0\expndtw0\kerning0
+\
+-start classifying the text data by coming up with a list of regular expressions and using them to identify posts related to:\
+\
+-Suicidal ideation comments (e.g., grep phrases like \'93want to die\'94, \'93want to end it\'94, etc.)\
+\pard\pardeftab720
+\cf0 \expnd0\expndtw0\kerning0
+-Troll comments (e.g., grep memetic phrases that encourage other users to commit suicide, e.g. \'93kill yourself\'94, \'93do it f*****\'94, etc, as well as slurs)\
+\
+-finalize my question\expnd0\expndtw0\kerning0
+, depending on what data is available\
+\
+Although I am interested in the relationship between trolling and mental health, I\'92m concerned about being able to identify instances of trolling because of Reddit\'92s moderators (particularly in depression subreddits, as the moderation there is so strict).}
