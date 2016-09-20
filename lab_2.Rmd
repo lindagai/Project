@@ -9,6 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+I am working on a project on mental health (specifically suicidal ideation) and trolling among Reddit users, along with Lacey. Generally, we are interested in whether we can identify users that are depressed, and their identifying characteristics, as well as the relationship between trolling and mental health among Reddit users.
+
+
+Reddit is a popular online message board, commonly used to share news and images, as well as discussion on user-created topics. It is the 11th most popular website in the US, ranked just under Twitter which comes in at #10. Notably, some discussion boards (known as “subreddits”) are used to provide and ask for advice and support, and many users share deeply personal information and emotional states. We are particularly interested in how we might be able to identify suicidal ideation among Reddit users, as many users post suicide notes and/or reveal intention to commit suicide.
+
 ## A specific, quantitative statement of the question you are asking 
 
 Our current goal is to create a classification algorithm that will classify Reddit comment text as indicating suicidal ideation or not. After creating this algorithm, if we have time, we can apply it to other contexts (e.g. users, subreddits) to answer more questions about suicidal ideation on Reddit generally.
@@ -57,4 +62,4 @@ depression | todayilearned |12 | 4 | 1
 Understandably, r/depression shares 38% of its users with r/AskReddit, a discussion board in which users ask for and receive advice on their life problems. However, one unexpected feature of this search is that r/depression shares 14% of its users with r/funny. One possible future direction for the project would be to try to identify users in r/funny that may be depressed. (The other depression subreddits were too small to find related subreddits using this method, as none of them shared over 10% of their userbase with a different subreddit.)
 
 ## Any analysis/data collection you have done
-No analysis yet. For data collection, see previous section.
+I started writing up a JSON parser in R that collects the relevant information from a single JSON file and puts them in a data frame, though it turns out it's easier to just use the Python package PRAW to put it in a .csv. For data collection, see previous section.
