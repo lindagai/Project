@@ -1,0 +1,30 @@
+---
+title: "Lab update 3"
+author: "Linda Gai"
+date: "9/27/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Any things you are stuck on with data collection
+We recently realized that Reddit's API blocks scraping from /r/depression (but not any other boards we have tried to scrape). We contacted Reddit's API support in the hopes of getting permission to scrape from that board about 4 days ago, but have not heard anything back. We're not totally sure why that happened.
+
+One possibility is that /r/depression contains a lot of sensitive information, so Reddit (or possibly one of the moderators, although I think that is unlikely) may block scraping from it to protect users' privacy. In fact, the first day we tried to scrape from /r/depression, we received an email from Reddit's API support saying they were concerned about users' privacy, and asking if we were planning to monetize our script.
+
+The other possibility is that /r/depression has more stringent rate limits on scraping than other reddits, or we might need permission to download from it. We were able to download about two days' worth of comments in JSON format from r/depression using the Python package subrredit, so we may keep going with that.
+
+## Current data cleaning work
+
+#### What you have done
+Last week, Lacey sampled some comments from several mental health-related subreddits, and we scored both on whether the user
+
++ was currently experiencing suicidal ideation
++ had experienced suicidal ideation in the past (with some period of healing after)
++ had some mental illness (e.g. depression or anxiety)
+
+#### What you still need to do
++ Finish scraping comments from r/depression using subredditarchive.py
++ Finish writing the JSON parser
