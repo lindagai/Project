@@ -24,7 +24,7 @@ We have...
 
 * a large training set of approximately 600 comments from mental health subreddits, including but not limited to r/depression. The comments were obtained and scored as follows:
     + ~110 submissions (i.e. comments from the original poster), scored by both Lacey and Linda, randomly sampled from a set of ~20 of the largest mental health subreddits excluding r/depression, using the PRAW python package's random sampling function. Comments were scored for current suicidal ideation, past suicidal ideation, and the presence/absence of mood or anxiety disorders. ~50% of these posts indicate suicidal ideation.
-    + ~500 comments (consisting of both submissions and replies) from r/depression that were posted in June. Lacey and Linda each scored ~300 comments, with ~100 comments scored by both. Comments were scored only for the presence of suicidal ideation, and were obtained from June posts in r/depression. Only about 30 of these comments indicate suicide ideation.
+    + ~800 comments (consisting of both submissions and replies) from r/depression that were posted in June. Lacey and Linda each scored ~450 comments, with ~100 comments scored by both. Comments were scored only for the presence of suicidal ideation, and were obtained from June posts in r/depression. Only about 30 of these comments indicate suicide ideation.
 
 * a set of common phrases that we believe indicate suicidal ideation or intention, created based on the scored posts.
 
