@@ -1,0 +1,43 @@
+---
+title: "Lab - 10/7/16"
+author: "Linda Gai"
+date: "10/6/2016"
+output: html_document
+---
+#Overview and step-by-step analysis plan
+
+Our ultimate goal is to come up with models of behavior for users that admit to having suicidal ideation on Reddit's r/depression subreddit. That is, we plan to
+
+1. identify users that are suicidal using an algorithm that searches posts for key phrases that we believe constitutes suicidal ideation (in light of the text mining lecture, this will probably be updated next week)
+
+2. look into the suicidal users' post history to answer questions about their behavior. For example, some questions we are interested in looking at are...
+    + How many openly suicidal users use throwaway accounts, i.e. created a new account dedicated to expressing suicidal thoughts on one thread? Conversely, how many users used previously active accounts to admit thoughts of suicide? 
+
+    + How many users, after posting about suicidal ideation, “disappear” from a formerly active account (possibly indicating that the user has died)? Conversely, how many continue to post?
+
+    + How many openly suicidal users post only in r/depression? Other mental health subreddits?
+
+#Collected data set(s)
+We have...
+
+* all the comments from r/depression from June 1-30, 2016, in JSON format
+
+* a large training set of approximately 600 comments from mental health subreddits, including but not limited to r/depression. The comments were obtained and scored as follows:
+    + ~110 submissions (i.e. comments from the original poster), scored by both Lacey and Linda, randomly sampled from a set of ~20 of the largest mental health subreddits excluding r/depression, using the PRAW python package's random sampling function. Comments were scored for current suicidal ideation, past suicidal ideation, and the presence/absence of mood or anxiety disorders. ~50% of these posts indicate suicidal ideation.
+    + ~500 comments (consisting of both submissions and replies) from r/depression that were posted in June. Lacey and Linda each scored ~300 comments, with ~100 comments scored by both. Comments were scored only for the presence of suicidal ideation, and were obtained from June posts in r/depression. Only about 30 of these comments indicate suicide ideation.
+
+* a set of common phrases that we believe indicate suicidal ideation or intention, created based on the scored posts.
+
+# Current Progress
+So far, we have:
+
++ a JSON parser (written with help from John) that takes in a JSON file and spits outs a data frame that contains the attributes of a submission, along with all of its replies
+
++ a function that, given a username, gets all of the Reddit posts from that user
+
+We've also started putting together a classification algorithm that will search individual posts for phrases that match phrases that indicate suicidal ideation. The idea is that, since we are only interested in the behavior of suicidal users, we want an algorithm that has very high sensitivity (i.e. will identify only true positives of suicidal users), but we don't care too much about the specificity of the algorithm.
+
+#Plan for next week
++ Update and test the suicide classification algorithm on the scored datasets as needed
+
++ Start exploratory data analysis on users' post history (and get some graphs to show for it!)
