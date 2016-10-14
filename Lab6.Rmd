@@ -1,0 +1,240 @@
+---
+title: "Lab6_Presentation"
+author: "Linda Gai"
+date: "10/14/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("/Users/lindagai/Documents/classes/2nd year/Data Science/Wk5_classification/")
+```
+
+## Introduction
+
+I am working on a project on mental health (specifically suicidal ideation) and trolling among Reddit users, along with Lacey. Generally, we are interested in whether we can identify users that are depressed, and their identifying characteristics. Our ultimate goal is to come up with models of behavior for users that admit to having suicidal ideation on Reddit's r/depression subreddit. That is, we plan to look into the suicidal users' post history to answer questions about their behavior. Specifically, I am interested in developing a logistic regression model to predict whether a user will make a post containing thoughts of suicidal ideation, based on their post history. To do this, I will first examine the word choice and sentiment differences between suicidal and non-suicidal users.
+
+Reddit is a popular online message board, commonly used to share news and images, as well as discussion on user-created topics. It is the 11th most popular website in the US, ranked just under Twitter which comes in at #10. Notably, some discussion boards (known as “subreddits”) are used to provide and ask for advice and support, and many users share deeply personal information and emotional states. We are particularly interested in how we might be able to identify suicidal ideation among Reddit users, as many users post suicide notes and/or reveal intention to commit suicide.
+
+## Methods
+
+### Collected data set(s)
+We collected the following datasets:
+
+* all the comments from r/depression from June 1-30, 2016, in JSON format
+
+* a large training set of approximately 600 comments from mental health subreddits, including but not limited to r/depression. The comments were obtained and scored as follows:
+    + ~110 submissions (i.e. comments from the original poster), scored by both Lacey and Linda, randomly sampled from a set of ~20 of the largest mental health subreddits excluding r/depression, using the PRAW python package's random sampling function. Comments were scored for current suicidal ideation, past suicidal ideation, and the presence/absence of mood or anxiety disorders. ~50% of these posts indicate suicidal ideation.
+    + ~500 comments (consisting of both submissions and replies) from r/depression that were posted in June. Lacey and Linda each scored ~300 comments, with ~100 comments scored by both. Comments were scored only for the presence of suicidal ideation, and were obtained from June posts in r/depression. Only about 30 of these comments indicate suicide ideation.
+    
+    * a JSON parser (written with help from John) that takes in a JSON file and spits outs a data frame that contains the attributes of a submission, along with all of its replies
+
+### Analysis
+
+#### Classification of Posts into Suicidal and Non-suicidal Categories
+We created a classification algorithm that will search individual posts for phrases that match phrases that indicate suicidal ideation. The idea is that, since we are only interested in the behavior of suicidal users, we want an algorithm that has very high sensitivity (i.e. will identify only true positives of suicidal users), but we don't care too much about the specificity of the algorithm.
+
+#### Exploratory Data Analysis
+
+##### How does word choice differ between suicidal and non-suicidal users?
+Here, I compare word tokens between suicidal and non-suicidal POSTS (not comments), using the classified set that has already been scored by the algorithm.
+
+
+```{r, echo=FALSE}
+#########################
+
+#classified has the june posts with the SI classification.
+load(file="Classified_Posts/June_Posts_Classified.RData")
+
+library(tm)
+library(topicmodels)
+library(dplyr)
+library(tidytext)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+
+
+
+#Get the tokens out of the posts
+post.tok <- post.data %>% 
+  mutate(linenumber=row_number()) %>%
+  unnest_tokens(word,selftext) 
+
+#get rid of stop words
+data("stop_words")
+tidy.post.tok <- post.tok %>%
+  anti_join(stop_words)
+
+#### Compare word tokens between suicidal and non-suicidal POSTS
+#Use the test set that has already been scored
+
+suicidal.post.tok = tidy.post.tok[which(tidy.post.tok$class==TRUE),]
+not.suicidal.post.tok = tidy.post.tok[which(tidy.post.tok$class==FALSE),]
+
+#Get counts for each
+suicidal.post.tok <- suicidal.post.tok %>%
+  group_by(word) %>%
+  summarize(n=n()) %>%
+  arrange(desc(n))
+
+not.suicidal.post.tok <- not.suicidal.post.tok %>%
+  group_by(word) %>%
+  summarize(n=n()) %>%
+  arrange(desc(n))
+
+comparison <- suicidal.post.tok %>%
+  rename(sui = n) %>%
+  inner_join(not.suicidal.post.tok,by="word") %>%
+  rename(not.sui = n) %>%
+  mutate(sui = sui / sum(sui),
+         not.sui = not.sui / sum(not.sui),diff=sui-not.sui) %>%
+  arrange(diff)
+
+#The words most used by the suicidal users isn't useful,
+#since we identify them by the words "die", "kill", etc.,
+#so it's unsurprising the words in the phrases we used to 
+#appear the most frequently and don't appear much in the non-suicidal group.
+
+head(comparison)
+
+#However, the words used by the depression NON-suicidal users is interesting.
+#We could use these as predictors for the logistic regression.
+tail(comparison)
+
+range(comparison$diff)
+
+#Plot the difference in word use as graphs
+library(reshape2)
+plot.words <- melt(comparison[1:10,]) %>% filter(variable!="diff")
+  
+plot.words$word <- factor(plot.words$word, 
+                           levels = plot.words$word[order(comparison[1:10,]$diff)])
+plot.words$word  # notice the changed order of factor levels
+
+ggplot(plot.words, aes(word, value))+
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+
+#'feel' might appear a lot since it's a synonym for think,
+#but doesn't appear in the algorithm
+
+```
+
+
+##### What are the overall sentiment pattern differences between suicidal and non-suicidal posts?
+
+```{r,echo=FALSE}
+
+#classified has the june posts with the SI classification.
+load(file="Classified_Posts/June_Posts_Classified.RData")
+
+library(dplyr)
+library(tidytext)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+setwd("/Users/lindagai/Documents/classes/2nd year/Data Science/Wk5_classification/")
+load(file="Classified_Posts/June_Authors_Data.RData")
+
+nrc <- sentiments %>%
+  filter(lexicon == "nrc") %>%
+  dplyr::select(word, sentiment)
+
+#Get the tokens out of the posts
+post.tok <- user.post.data %>% 
+  mutate(linenumber=row_number()) %>%
+  unnest_tokens(word,selftext) 
+
+#get rid of stop words
+data("stop_words")
+tidy.post.tok <- post.tok %>%
+  anti_join(stop_words)
+
+#Label the words with the sentiments using an inner join
+#with the nrc sentiments
+post.sent = post.tok %>% inner_join(nrc)
+
+#Get the sentiments per person
+
+#Make a table of the sentiments
+# Table - only 10 sentiments in posts from
+#r/depression's suicidal users
+dep.sent <- post.sent %>%
+  filter(subreddit_id=="t5_2qqqf") %>%
+  group_by(sentiment,subreddit_id) %>%
+  summarize(n=n()) %>%
+  filter(n>100) %>%  
+  arrange(desc(n))
+
+#dep.sent[1:10,]
+
+# Table - 10 most common sentiments in posts NOT in r/depression 
+# from from suicidal users
+not.dep.sent <- post.sent %>% 
+  filter(subreddit_id!="t5_2qqqf") %>%
+  group_by(sentiment,subreddit_id) %>%
+  summarize(n=n()) %>%
+  filter(n>100) %>%  
+  arrange(desc(n))
+
+#not.dep.sent[1:10,]
+
+comparison <- dep.sent %>%
+  rename(dep = n) %>%
+  inner_join(not.dep.sent,by="sentiment") %>%
+  rename(not.dep = n) %>%
+  mutate(dep = dep / sum(dep),
+         not.dep = not.dep / sum(not.dep),diff=dep-not.dep) %>%
+  arrange(diff)
+
+library(data.table)
+
+#Plot the difference in word use as graphs
+library(reshape2)
+#plot.sentiments <-comparison[1:10,]
+#plotmelt<-melt(plot.sentiments)
+#dfm <- melt(df[,c('Input','Rtime','Btime')],id.vars = "sentiment")
+
+depsub.sent.for.merge <- as.data.frame(comparison[1:10,1:3])
+not.depsub.sent.for.merge <- as.data.frame(comparison[1:10,c(1,4:5)])
+
+colnames(depsub.sent.for.merge)<-c("sentiment","subreddit_id","value")
+colnames(not.depsub.sent.for.merge)<-c("sentiment","subreddit_id","value")
+
+plot.sentiments <-rbind(depsub.sent.for.merge,not.depsub.sent.for.merge)
+plot.sentiments[plot.sentiments=='t5_2qmij'] <-'r/Anxiety'
+plot.sentiments[plot.sentiments=='t5_2qpzs'] <-'r/SuicideWatch'
+plot.sentiments[plot.sentiments=='t5_2qqqf'] <-'r/depression'
+
+#plot.sentiments
+
+ggplot(plot.sentiments, aes(sentiment, value)) +
+  geom_bar(aes(fill = subreddit_id), position = "dodge", stat="identity")
+
+
+```
+
+##### What are the other subreddits that suicidal users post in?
+
+```{r}
+load(file="Classified_Posts/June_Authors_Data.RData")
+
+not.dep.sent <- post.sent %>% 
+  filter(subreddit_id!="t5_2qqqf") %>%
+  group_by(sentiment,subreddit_id) %>%
+  summarize(n=n()) %>%
+  filter(n>100) %>%  
+  arrange(desc(n))
+
+x <- sort(table(user.post.data$subreddit_id),decreasing=T)[1:10]
+names(x)<-c("depression",'AskReddit','datfeel','SuicideWatch',
+            'Fireteams','asktransgender','leagueoflegends','DotA2',
+            'Anxiety','ForeverAlone')
+x
+```
+
+##### What are the sentiment pattern differences in posting history between suicidal and non-suicidal users?
+
+
+
+##### Logistic regression model for predicting suicidal ideation on Reddit
